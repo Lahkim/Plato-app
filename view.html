@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PLATO | Menu AR</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+        :root { --p: #FF4D00; }
+        body, html { margin: 0; padding: 0; height: 100vh; overflow: hidden; font-family: -apple-system, sans-serif; background: #fff; }
+        model-viewer { width: 100%; height: 100%; background: #f7f7f7; }
+        .overlay { position: absolute; bottom: 0; width: 100%; padding: 40px 20px; background: linear-gradient(transparent, white 40%); text-align: center; box-sizing: border-box; }
+        .price { color: var(--p); font-weight: bold; font-size: 20px; }
+        h1 { margin: 5px 0 20px 0; font-size: 28px; }
+        .btn-ar { background: var(--p); color: #fff; border: none; padding: 20px; width: 100%; border-radius: 100px; font-weight: bold; font-size: 16px; box-shadow: 0 10px 20px rgba(255,77,0,0.3); }
+    </style>
+</head>
+<body>
+
+    <model-viewer id="mv" ar ar-modes="scene-viewer quick-look webxr" camera-controls auto-rotate shadow-intensity="1">
+        <div class="overlay">
+            <div class="price" id="c-price"></div>
+            <h1 id="c-name">Chargement...</h1>
+            <button slot="ar-button" class="btn-ar">VOIR SUR MA TABLE</button>
+        </div>
+    </model-viewer>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if(id) {
+        const mv = document.getElementById('mv');
+        mv.src = `https://cdn-luma.com/${id}/model.glb`;
+        mv.iosSrc = `https://cdn-luma.com/${id}/model.usdz`;
+        document.getElementById('c-name').innerText = params.get('name');
+        document.getElementById('c-price').innerText = params.get('price');
+    }
+</script>
+</body>
+</html>
