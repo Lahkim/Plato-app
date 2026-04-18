@@ -2,172 +2,109 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PLATO | Premium AR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PLATO | Gastronomie Augmentée</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-
-        :root {
-            --primary: #FF4D00;
-            --glass: rgba(255, 255, 255, 0.8);
-            --dark: #0A0A0B;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #F8F9FA;
-            color: var(--dark);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* --- VUE CLIENT : LUXE & ÉPURE --- */
-        #client-view { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        model-viewer {
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, #ffffff 0%, #f1f1f1 100%);
-            --poster-color: transparent;
-        }
-
-        .client-header {
-            position: absolute; top: 20px; width: 100%; text-align: center; z-index: 10;
-        }
-
-        .brand-pill {
-            background: var(--dark); color: white; padding: 8px 16px; border-radius: 100px;
-            font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
-        }
-
-        .client-card {
-            position: absolute; bottom: 30px; left: 20px; right: 20px;
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 30px; border-radius: 32px; border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center;
-        }
-
-        h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -1px; }
-        .price { color: var(--primary); font-weight: 600; font-size: 18px; margin: 5px 0 20px 0; }
-
-        .btn-ar {
-            background: var(--primary); color: white; border: none; padding: 20px;
-            border-radius: 18px; width: 100%; font-weight: 700; font-size: 16px;
-            box-shadow: 0 10px 25px rgba(255, 77, 0, 0.3); transition: transform 0.2s;
-        }
-
-        /* --- DASHBOARD ADMIN : DARK MODE SLEEK --- */
-        #admin-panel { 
-            display: none; min-height: 100vh; background: var(--dark); 
-            padding: 40px 25px; box-sizing: border-box; color: white;
-        }
-
-        .admin-header h2 { font-size: 32px; font-weight: 800; margin-bottom: 40px; }
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Instrument+Sans:wght@600;700&display=swap');
         
-        .input-group { margin-bottom: 25px; }
-        label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 8px; text-transform: uppercase; }
+        :root { --p: #FF4D00; --bg: #050505; }
         
-        input {
-            width: 100%; background: #151517; border: 1px solid #222; padding: 18px;
-            border-radius: 16px; color: white; font-size: 16px; box-sizing: border-box;
-            transition: border-color 0.3s;
-        }
+        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Instrument Sans', sans-serif; height: 100vh; overflow: hidden; }
 
-        input:focus { border-color: var(--primary); outline: none; }
-
-        .qr-result {
-            margin-top: 40px; background: white; padding: 30px; border-radius: 32px;
-            animation: slideUp 0.5s ease;
-        }
-
-        #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 12px; }
+        /* --- INTERFACE CLIENT --- */
+        #client-view { height: 100vh; display: flex; flex-direction: column; position: relative; }
         
-        @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+        model-viewer { width: 100%; height: 100%; --poster-color: transparent; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
+
+        .client-overlay {
+            position: absolute; bottom: 0; width: 100%; padding: 40px 25px 60px 25px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+            box-sizing: border-box; text-align: center; pointer-events: none;
         }
+
+        h1 { font-family: 'Syne'; font-size: 32px; margin: 0; letter-spacing: -1px; pointer-events: auto; }
+        .price { color: var(--p); font-size: 20px; font-weight: 700; margin: 10px 0 25px 0; display: block; }
+
+        .btn-main {
+            background: var(--p); color: white; border: none; padding: 20px 40px; border-radius: 100px;
+            font-weight: 700; font-size: 16px; width: 100%; pointer-events: auto;
+            box-shadow: 0 10px 30px rgba(255, 77, 0, 0.4); transition: transform 0.2s ease;
+        }
+
+        /* --- INTERFACE ADMIN --- */
+        #admin-panel { display: none; padding: 40px 20px; height: 100vh; overflow-y: auto; }
+        .card { background: #111; border: 1px solid #222; padding: 30px; border-radius: 30px; }
+        input { 
+            width: 100%; padding: 18px; margin: 15px 0; border-radius: 15px; border: 1px solid #333; 
+            background: #000; color: #fff; font-size: 16px; box-sizing: border-box; 
+        }
+
+        .qr-display { background: white; padding: 30px; border-radius: 30px; margin-top: 30px; text-align: center; }
+        #qrcode img { margin: 0 auto; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div id="client-view">
-        <div class="client-header"><span class="brand-pill">PLATO AR EXPERIENCE</span></div>
-        <model-viewer id="mv" ar ar-modes="scene-viewer quick-look webxr" camera-controls shadow-intensity="1" exposure="1.2">
-            <div class="client-card">
-                <h1 id="c-name">Gastronomie 3D</h1>
-                <div id="c-price" class="price">Scannez un menu pour commander</div>
-                <button slot="ar-button" class="btn-ar">VOIR LE PLAT À TABLE</button>
+        <model-viewer id="mv" ar ar-modes="scene-viewer quick-look webxr" camera-controls auto-rotate 
+                      shadow-intensity="2" shadow-softness="1" exposure="1.2" environment-image="neutral">
+            <div class="client-overlay">
+                <h1 id="c-name">PLATO SIGNATURE</h1>
+                <span class="price" id="c-price">Découvrez l'excellence</span>
+                <button slot="ar-button" class="btn-main">✨ VOIR LE PLAT À TABLE</button>
             </div>
         </model-viewer>
     </div>
 
     <div id="admin-panel">
-        <div class="admin-header"><h2>PLATO<span>.</span></h2></div>
-        
-        <div class="input-group">
-            <label>Nom du Chef-d'œuvre</label>
-            <input type="text" id="name" placeholder="ex: Tajine Royal d'Agneau">
+        <div class="card">
+            <h2 style="font-family:'Syne'; font-size: 32px; margin: 0 0 10px 0;">PLATO</h2>
+            <p style="opacity: 0.5; margin-bottom: 30px;">Directeur Technique : IA Intégrée</p>
+            
+            <input type="text" id="n" placeholder="Nom du Chef-d'œuvre">
+            <input type="text" id="p" placeholder="Prix (ex: 120 MAD)">
+            <input type="text" id="l" placeholder="Collez le lien Luma/Polycam">
+            
+            <button class="btn-main" onclick="generate()">CRÉER L'EXPÉRIENCE</button>
         </div>
 
-        <div class="input-group">
-            <label>Prix de vente</label>
-            <input type="text" id="price" placeholder="ex: 120 MAD">
-        </div>
-
-        <div class="input-group">
-            <label>Lien de Capture (Luma/Polycam)</label>
-            <input type="text" id="luma" placeholder="Collez l'URL de partage">
-        </div>
-
-        <button class="btn-ar" style="margin-top: 20px;" onclick="process()">GÉNÉRER L'EXPÉRIENCE</button>
-        
-        <div id="result" class="qr-result" style="display:none;">
+        <div id="result" class="qr-display" style="display:none;">
             <div id="qrcode"></div>
-            <p id="link-text" style="color: #888; font-size: 11px; margin-top: 20px; word-break: break-all;"></p>
-            <button onclick="window.print()" style="margin-top:10px; background:none; border:none; color:var(--primary); font-weight:700;">Imprimer le QR Code</button>
+            <p id="final-link" style="color: #666; font-size: 10px; margin-top: 20px; word-break: break-all;"></p>
+            <button onclick="window.print()" style="margin-top:10px; background:none; border:none; color:var(--p); font-weight:bold;">IMPRIMER QR CODE</button>
         </div>
     </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(window.location.search);
     
+    // Switch Admin/Client
     if(window.location.hash === "#admin") {
         document.getElementById('client-view').style.display = 'none';
         document.getElementById('admin-panel').style.display = 'block';
-    } 
-    else if(params.get('id')) {
-        const id = params.get('id');
+    } else if(urlParams.get('id')) {
+        const id = urlParams.get('id');
         const mv = document.getElementById('mv');
         mv.src = `https://cdn-luma.com/${id}/model.glb`;
         mv.iosSrc = `https://cdn-luma.com/${id}/model.usdz`;
-        document.getElementById('c-name').innerText = params.get('name');
-        document.getElementById('c-price').innerText = params.get('price');
+        document.getElementById('c-name').innerText = urlParams.get('name');
+        document.getElementById('c-price').innerText = urlParams.get('price');
     }
 
-    function process() {
-        const rawLuma = document.getElementById('luma').value;
-        const n = document.getElementById('name').value;
-        const p = document.getElementById('price').value;
+    function generate() {
+        const rawLuma = document.getElementById('l').value;
+        const id = rawLuma.split('/').filter(Boolean).pop(); // Capture intelligente
+        const name = encodeURIComponent(document.getElementById('n').value);
+        const price = encodeURIComponent(document.getElementById('p').value);
         
-        const id = rawLuma.split('/').filter(p => p).pop();
-        const finalUrl = window.location.origin + window.location.pathname + "?id=" + id + "&name=" + encodeURIComponent(n) + "&price=" + encodeURIComponent(p);
+        const finalUrl = window.location.origin + window.location.pathname + "?id=" + id + "&name=" + name + "&price=" + price;
 
         document.getElementById('result').style.display = 'block';
         document.getElementById('qrcode').innerHTML = "";
-        
-        new QRCode(document.getElementById("qrcode"), {
-            text: finalUrl,
-            width: 220,
-            height: 220,
-            colorDark : "#000000",
-            colorLight : "#ffffff",
-            correctLevel : QRCode.CorrectLevel.H
-        });
-        
-        document.getElementById('link-text').innerText = finalUrl;
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        new QRCode(document.getElementById("qrcode"), { text: finalUrl, width: 220, height: 220, colorDark : "#000000" });
+        document.getElementById('final-link').innerText = finalUrl;
     }
 </script>
 </body>
