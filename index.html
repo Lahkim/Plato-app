@@ -2,109 +2,71 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PLATO | Gastronomie Augmentée</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PLATO | Générateur AR</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Instrument+Sans:wght@600;700&display=swap');
-        
-        :root { --p: #FF4D00; --bg: #050505; }
-        
-        body, html { margin: 0; padding: 0; background: var(--bg); color: white; font-family: 'Instrument Sans', sans-serif; height: 100vh; overflow: hidden; }
-
-        /* --- INTERFACE CLIENT --- */
-        #client-view { height: 100vh; display: flex; flex-direction: column; position: relative; }
-        
-        model-viewer { width: 100%; height: 100%; --poster-color: transparent; background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); }
-
-        .client-overlay {
-            position: absolute; bottom: 0; width: 100%; padding: 40px 25px 60px 25px;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
-            box-sizing: border-box; text-align: center; pointer-events: none;
-        }
-
-        h1 { font-family: 'Syne'; font-size: 32px; margin: 0; letter-spacing: -1px; pointer-events: auto; }
-        .price { color: var(--p); font-size: 20px; font-weight: 700; margin: 10px 0 25px 0; display: block; }
-
-        .btn-main {
-            background: var(--p); color: white; border: none; padding: 20px 40px; border-radius: 100px;
-            font-weight: 700; font-size: 16px; width: 100%; pointer-events: auto;
-            box-shadow: 0 10px 30px rgba(255, 77, 0, 0.4); transition: transform 0.2s ease;
-        }
-
-        /* --- INTERFACE ADMIN --- */
-        #admin-panel { display: none; padding: 40px 20px; height: 100vh; overflow-y: auto; }
-        .card { background: #111; border: 1px solid #222; padding: 30px; border-radius: 30px; }
-        input { 
-            width: 100%; padding: 18px; margin: 15px 0; border-radius: 15px; border: 1px solid #333; 
-            background: #000; color: #fff; font-size: 16px; box-sizing: border-box; 
-        }
-
-        .qr-display { background: white; padding: 30px; border-radius: 30px; margin-top: 30px; text-align: center; }
-        #qrcode img { margin: 0 auto; border-radius: 10px; }
+        :root { --p: #FF4D00; --bg: #000; }
+        body { margin: 0; font-family: -apple-system, sans-serif; background: var(--bg); color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; box-sizing: border-box; }
+        .container { max-width: 500px; width: 100%; }
+        h1 { font-size: 28px; margin-bottom: 5px; color: var(--p); }
+        p { opacity: 0.7; margin-bottom: 30px; }
+        label { display: block; margin-top: 15px; font-size: 14px; opacity: 0.8; }
+        input { width: 100%; padding: 18px; margin-top: 5px; border-radius: 12px; border: 1px solid #333; background: #111; color: #fff; box-sizing: border-box; font-size: 16px; }
+        .btn { background: var(--p); color: #fff; border: none; padding: 20px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 16px; margin-top: 25px; cursor: pointer; }
+        .qr-card { background: #fff; color: #000; padding: 30px; border-radius: 25px; margin-top: 30px; text-align: center; width: 100%; box-sizing: border-box; }
+        #qrcode img { margin: 0 auto; }
+        .footer-link { margin-top: 30px; font-size: 12px; opacity: 0.4; }
     </style>
 </head>
 <body>
 
-    <div id="client-view">
-        <model-viewer id="mv" ar ar-modes="scene-viewer quick-look webxr" camera-controls auto-rotate 
-                      shadow-intensity="2" shadow-softness="1" exposure="1.2" environment-image="neutral">
-            <div class="client-overlay">
-                <h1 id="c-name">PLATO SIGNATURE</h1>
-                <span class="price" id="c-price">Découvrez l'excellence</span>
-                <button slot="ar-button" class="btn-main">✨ VOIR LE PLAT À TABLE</button>
-            </div>
-        </model-viewer>
-    </div>
+    <div class="container">
+        <h1>PLATO</h1>
+        <p>Générateur de Menu en Réalité Augmentée</p>
 
-    <div id="admin-panel">
-        <div class="card">
-            <h2 style="font-family:'Syne'; font-size: 32px; margin: 0 0 10px 0;">PLATO</h2>
-            <p style="opacity: 0.5; margin-bottom: 30px;">Directeur Technique : IA Intégrée</p>
-            
-            <input type="text" id="n" placeholder="Nom du Chef-d'œuvre">
-            <input type="text" id="p" placeholder="Prix (ex: 120 MAD)">
-            <input type="text" id="l" placeholder="Collez le lien Luma/Polycam">
-            
-            <button class="btn-main" onclick="generate()">CRÉER L'EXPÉRIENCE</button>
-        </div>
+        <label>Nom du plat</label>
+        <input type="text" id="name" placeholder="ex: Tajine d'Oujda">
 
-        <div id="result" class="qr-display" style="display:none;">
+        <label>Prix</label>
+        <input type="text" id="price" placeholder="ex: 95.00 MAD">
+
+        <label>Lien Capture (Luma ou Polycam)</label>
+        <input type="text" id="luma" placeholder="Collez le lien ici">
+
+        <button class="btn" onclick="generate()">CRÉER L'EXPÉRIENCE CLIENT</button>
+
+        <div id="result" class="qr-card" style="display:none;">
             <div id="qrcode"></div>
-            <p id="final-link" style="color: #666; font-size: 10px; margin-top: 20px; word-break: break-all;"></p>
-            <button onclick="window.print()" style="margin-top:10px; background:none; border:none; color:var(--p); font-weight:bold;">IMPRIMER QR CODE</button>
+            <p style="margin-top:15px; font-weight:bold;">QR Code prêt !</p>
+            <p id="link-text" style="font-size:10px; color:#888; word-break:break-all;"></p>
         </div>
+        
+        <div class="footer-link">PLATO Infrastructure v1.0</div>
     </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // Switch Admin/Client
-    if(window.location.hash === "#admin") {
-        document.getElementById('client-view').style.display = 'none';
-        document.getElementById('admin-panel').style.display = 'block';
-    } else if(urlParams.get('id')) {
-        const id = urlParams.get('id');
-        const mv = document.getElementById('mv');
-        mv.src = `https://cdn-luma.com/${id}/model.glb`;
-        mv.iosSrc = `https://cdn-luma.com/${id}/model.usdz`;
-        document.getElementById('c-name').innerText = urlParams.get('name');
-        document.getElementById('c-price').innerText = urlParams.get('price');
-    }
-
     function generate() {
-        const rawLuma = document.getElementById('l').value;
-        const id = rawLuma.split('/').filter(Boolean).pop(); // Capture intelligente
-        const name = encodeURIComponent(document.getElementById('n').value);
-        const price = encodeURIComponent(document.getElementById('p').value);
+        const rawLuma = document.getElementById('luma').value;
+        const n = document.getElementById('name').value;
+        const p = document.getElementById('price').value;
         
-        const finalUrl = window.location.origin + window.location.pathname + "?id=" + id + "&name=" + name + "&price=" + price;
+        const parts = rawLuma.split('/');
+        const id = parts[parts.length - 1] || parts[parts.length - 2];
+
+        // On pointe vers la page de visualisation (view.html)
+        const finalUrl = window.location.origin + "/view.html?id=" + id + "&name=" + encodeURIComponent(n) + "&price=" + encodeURIComponent(p);
 
         document.getElementById('result').style.display = 'block';
         document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById("qrcode"), { text: finalUrl, width: 220, height: 220, colorDark : "#000000" });
-        document.getElementById('final-link').innerText = finalUrl;
+        
+        new QRCode(document.getElementById("qrcode"), {
+            text: finalUrl,
+            width: 220,
+            height: 220
+        });
+        
+        document.getElementById('link-text').innerText = finalUrl;
     }
 </script>
 </body>
