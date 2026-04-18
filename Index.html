@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PLATO | Expérience AR</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Instrument+Sans:wght@500;700&display=swap');
+        
+        :root { --p: #FF4D00; --b: #fff; }
+        
+        body, html { 
+            margin: 0; padding: 0; 
+            font-family: 'Instrument Sans', sans-serif; 
+            height: 100%; width: 100%;
+            background: #f7f7f7;
+            overflow: hidden; 
+        }
+
+        /* --- VUE CLIENT (Design de Luxe) --- */
+        #client-view { height: 100%; position: relative; display: flex; flex-direction: column; }
+        
+        model-viewer { 
+            width: 100%; 
+            height: 100%; 
+            --poster-color: transparent;
+        }
+
+        .ui-overlay { 
+            position: absolute; 
+            bottom: 0; width: 100%; 
+            padding: 40px 25px; 
+            background: linear-gradient(transparent, white 40%); 
+            text-align: center; 
+            box-sizing: border-box; 
+            z-index: 10;
+        }
+
+        .price-badge { 
+            color: var(--p); 
+            font-weight: 700; 
+            font-size: 20px; 
+            display: block; 
+            margin-bottom: 5px; 
+        }
+
+        h1 { margin: 0; font-family: 'Syne'; font-size: 32px; color: #000; letter-spacing: -1px; }
+
+        .ar-btn { 
+            background: var(--p); 
+            color: white; 
+            border: none; 
+            padding: 20px; 
+            border-radius: 100px; 
+            width: 100%; 
+            font-weight: 700; 
+            font-size: 16px;
+            margin-top: 25px; 
+            box-shadow: 0 15px 30px rgba(255, 77, 0, 0.25); 
+            cursor: pointer;
+        }
+
+        /* --- DASHBOARD ADMIN (Caché via #admin) --- */
+        #admin-view { 
+            display: none; 
+            padding: 40px 20px; 
+            background: #000; 
+            color: #fff; 
+            height: 100vh; 
+            box-sizing: border-box; 
+            overflow-y: auto; 
+        }
+
+        .admin-card { background: #111; padding: 25px; border-radius: 24px; border: 1px solid #222; }
+        
+        input { 
+            width: 100%; 
+            padding: 18px; 
+            margin: 12px 0; 
+            border-radius: 15px; 
+            border: 1px solid #333; 
+            background: #000; 
+            color: #fff; 
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .qr-result-card { 
+            background: #fff; 
+            padding: 30px; 
+            border-radius: 30px; 
+            margin-top: 30px; 
+            color: #000; 
+            text-align: center; 
+        }
+    </style>
+</head>
+<body>
+
+    <div id="client-view">
+        <model-viewer id="main-model" 
+            src="" 
+            ios-src=""
+            ar ar-modes="scene-viewer quick-look webxr" 
+            camera-controls 
+            auto-rotate 
+            shadow-intensity="1"
+            exposure="1">
+            
+            <div class="ui-overlay">
+                <span class="price-badge" id="c-price">Sélectionnez un plat</span>
+                <h1 id="c-name">PLATO AR</h1>
+                <button slot="ar-button" class="ar-btn">✨ VOIR SUR MA TABLE</button>
+            </div>
+        </model-viewer>
+    </div>
+
+    <div id="admin-view">
+        <div class="admin-card">
+            <h2 style="font-family: 'Syne'; font-size: 28px; margin-top:0;">PLATO ADMIN</h2>
+            <p style="opacity:0.6; font-size:14px; margin-bottom:30px;">Générez une expérience client en 2 secondes.</p>
+            
+            <label>Nom du plat</label>
+            <input type="text" id="in-name" placeholder="ex: Tajine de Veau">
+            
+            <label>Prix</label>
+            <input type="text" id="in-price" placeholder="ex: 85.00 MAD">
+            
+            <label>Lien Luma (Capture ID)</label>
+            <input type="text" id="in-id" placeholder="Collez le lien de partage Luma">
+            
+            <button class="ar-btn" onclick="generateQR()">CRÉER LE QR CODE</button>
+        </div>
+        
+        <div id="qr-area" class="qr-result-card" style="display:none;">
+            <div id="qrcode" style="display:flex; justify-content:center;"></div>
+            <p id="qr-link" style="font-size:10px; margin-top:15px; color:#888; word-break: break-all;"></p>
+            <button onclick="window.print()" style="background:#eee; border:none; padding:10px; border-radius:10px; margin-top:10px; font-weight:bold;">IMPRIMER LE CODE</button>
+        </div>
+    </div>
+
+    <script>
+        // Logique CTO : Détection du mode (Admin vs Client)
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelId = urlParams.get('id');
+        const dishName = urlParams.get('name');
+        const price = urlParams.get('price');
+
+        // Si l'URL contient #admin, on affiche le panneau de contrôle
+        if (window.location.hash === "#admin") {
+            document.getElementById('client-view').style.display = 'none';
+            document.getElementById('admin-view').style.display = 'block';
+        } 
+        // Sinon, si on a un ID de plat, on affiche le viewer 3D
+        else if (modelId) {
+            const viewer = document.getElementById('main-model');
+            viewer.src = `https://cdn-luma.com/${modelId}/model.glb`;
+            viewer.iosSrc = `https://cdn-luma.com/${modelId}/model.usdz`;
+            document.getElementById('c-name').innerText = dishName;
+            document.getElementById('c-price').innerText = price;
+        }
+
+        // Fonction pour générer l'URL unique et le QR Code
+        function generateQR() {
+            const name = document.getElementById('in-name').value;
+            const pr = document.getElementById('in-price').value;
+            const lumaInput = document.getElementById('in-id').value;
+            
+            // On extrait l'ID du lien Luma
+            const id = lumaInput.split('/').pop();
+            
+            // On construit l'adresse de ton site (Vercel)
+            const baseUrl = window.location.origin + window.location.pathname;
+            const finalUrl = `${baseUrl}?id=${id}&name=${encodeURIComponent(name)}&price=${encodeURIComponent(pr)}`;
+
+            document.getElementById('qr-area').style.display = 'block';
+            document.getElementById('qrcode').innerHTML = "";
+            new QRCode(document.getElementById('qrcode'), {
+                text: finalUrl,
+                width: 220,
+                height: 220,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+            document.getElementById('qr-link').innerText = finalUrl;
+            
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>
